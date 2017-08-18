@@ -637,7 +637,7 @@ public protocol FileProvider: FileProviderBasic, FileProviderOperations, FilePro
 internal let pathTrimSet = CharacterSet(charactersIn: " /")
 extension FileProviderBasic {
     public var type: String {
-        return type(of: self).type
+        return Swift.type(of: self).type
     }
     
     public func url(of path: String? = nil) -> URL {
@@ -835,13 +835,13 @@ extension ExtendedFileProvider {
         let rect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         
         #if os(macOS)
-            let ppp = Int(NSScreen.main()?.backingScaleFactor ?? 1) // fetch device is retina or not
+            let ppp = Int(NSScreen.main?.backingScaleFactor ?? 1) // fetch device is retina or not
             
             size.width  *= CGFloat(ppp)
             size.height *= CGFloat(ppp)
             
             let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: Int(size.width), pixelsHigh: Int(size.height),
-                                       bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: NSCalibratedRGBColorSpace,
+                                       bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: NSColorSpaceName.calibratedRGB,
                                        bytesPerRow: 0, bitsPerPixel: 0)
             
             guard let context = NSGraphicsContext(bitmapImageRep: rep!) else {
@@ -849,7 +849,7 @@ extension ExtendedFileProvider {
             }
             
             NSGraphicsContext.saveGraphicsState()
-            NSGraphicsContext.setCurrent(context)
+            NSGraphicsContext.current = context
             
             let transform = pdfPage.getDrawingTransform(CGPDFBox.mediaBox, rect: rect, rotate: 0, preserveAspectRatio: true)
             context.cgContext.concatenate(transform)
