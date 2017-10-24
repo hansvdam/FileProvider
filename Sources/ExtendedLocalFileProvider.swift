@@ -198,7 +198,7 @@ public struct LocalFileInformationGenerator {
         let playerItem = AVPlayerItem(url: fileURL)
         let metadataList = playerItem.asset.commonMetadata
         for item in metadataList {
-            if item.commonKey == AVMetadataCommonKeyArtwork {
+            if item.commonKey == AVMetadataKey.commonKeyArtwork {
                 if let data = item.dataValue {
                     return ImageClass(data: data)
                 }
@@ -330,7 +330,7 @@ public struct LocalFileInformationGenerator {
             let playerItem = AVPlayerItem(url: fileURL)
             let metadataList = playerItem.asset.commonMetadata
             for item in metadataList {
-                if let description = makeDescription(item.commonKey) {
+                if let description = makeDescription(item.commonKey.map { $0.rawValue }) {
                     if let value = item.stringValue {
                         keys.append(description)
                         dic[description] = value
@@ -366,7 +366,7 @@ public struct LocalFileInformationGenerator {
             }
         }
         let asset = AVURLAsset(url: fileURL, options: nil)
-        let videoTracks = asset.tracks(withMediaType: AVMediaTypeVideo)
+        let videoTracks = asset.tracks(withMediaType: AVMediaType.video)
         if let videoTrack = videoTracks.first {
             var bitrate: Float = 0
             let width = Int(videoTrack.naturalSize.width)
@@ -380,7 +380,7 @@ public struct LocalFileInformationGenerator {
             add(key: "Duration", value: TimeInterval(duration).formatshort)
             add(key: "Video Bitrate", value: "\(Int(ceil(bitrate / 1000))) kbps")
         }
-        let audioTracks = asset.tracks(withMediaType: AVMediaTypeAudio)
+        let audioTracks = asset.tracks(withMediaType: AVMediaType.audio)
         // dic["Audio channels"] = audioTracks.count
         var bitrate: Float = 0
         for track in audioTracks {

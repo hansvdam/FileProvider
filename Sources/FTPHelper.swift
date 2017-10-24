@@ -168,7 +168,7 @@ internal extension FTPFileProvider {
             if response.hasPrefix("25") {
                 completionHandler(nil)
             }
-            // not logged in
+                // not logged in
             else if response.hasPrefix("55") {
                 let spaceIndex = response.characters.index(of: "-") ?? response.startIndex
                 let code = Int(response.substring(to: spaceIndex).trimmingCharacters(in: .whitespacesAndNewlines)) ?? -1
@@ -181,43 +181,43 @@ internal extension FTPFileProvider {
     }
     
     func ftpPassive(_ task: FileProviderStreamTask, completionHandler: @escaping (_ dataTask: FileProviderStreamTask?, _ error: Error?) -> Void) {
-        func trimmedNumber(_ s : String) -> String {
-            let characterSet = Set("+*#0123456789".characters)
-            return String(s.characters.lazy.filter(characterSet.contains))
-        }
-        
-        self.execute(command: "PASV", on: task) { (response, error) in
-            if let error = error {
-                completionHandler(nil, error)
-                return
-            }
-            
-            guard let response = response, let destString = response.components(separatedBy: " ").flatMap({ $0 }).last else {
-                completionHandler(nil, self.throwError("", code: URLError.badServerResponse))
-                return
-            }
-            
-            let destArray = destString.components(separatedBy: ",").flatMap({ UInt32(trimmedNumber($0)) })
-            guard destArray.count == 6 else {
-                completionHandler(nil, self.throwError("", code: URLError.badServerResponse))
-                return
-            }
-            
-            // first 4 elements are ip, 2 next are port, as byte
-            var host = destArray.prefix(4).flatMap({ String($0) }).joined(separator: ".")
-            let port = Int(destArray[4] << 8 + destArray[5])
-            // IPv6 workaround
-            if host == "127.555.555.555" {
-                host = self.baseURL!.host!
-            }
-            
-            let passiveTask = self.session.fpstreamTask(withHostName: host, port: port)
-            passiveTask.resume()
-            if self.baseURL?.scheme == "ftps" || self.baseURL?.port == 990 {
-                task.startSecureConnection()
-            }
-            completionHandler(passiveTask, nil)
-        }
+//        func trimmedNumber(_ s : String) -> String {
+//            let characterSet = Set("+*#0123456789".characters)
+//            return String(s.characters.lazy.filter(characterSet.contains))
+//        }
+//
+//        self.execute(command: "PASV", on: task) { (response, error) in
+//            if let error = error {
+//                completionHandler(nil, error)
+//                return
+//            }
+//
+//            guard let response = response, let destString = response.components(separatedBy: " ").flatMap({ $0 }).last else {
+//                completionHandler(nil, self.throwError("", code: URLError.badServerResponse))
+//                return
+//            }
+//
+//            let destArray = destString.components(separatedBy: ",").flatMap({ UInt32(trimmedNumber($0)) })
+//            guard destArray.count == 6 else {
+//                completionHandler(nil, self.throwError("", code: URLError.badServerResponse))
+//                return
+//            }
+//
+//            // first 4 elements are ip, 2 next are port, as byte
+//            var host = destArray.prefix(4).flatMap({ String($0) }).joined(separator: ".")
+//            let port = Int(destArray[4] << 8 + destArray[5])
+//            // IPv6 workaround
+//            if host == "127.555.555.555" {
+//                host = self.baseURL!.host!
+//            }
+//
+//            let passiveTask = self.session.fpstreamTask(withHostName: host, port: port)
+//            passiveTask.resume()
+//            if self.baseURL?.scheme == "ftps" || self.baseURL?.port == 990 {
+//                task.startSecureConnection()
+//            }
+//            completionHandler(passiveTask, nil)
+//        }
     }
     
     func ftpActive(_ task: FileProviderStreamTask, completionHandler: @escaping (_ dataTask: FileProviderStreamTask?, _ error: Error?) -> Void) {
@@ -338,7 +338,7 @@ internal extension FTPFileProvider {
                     
                     let contents = response.components(separatedBy: "\n").flatMap({ $0.trimmingCharacters(in: .whitespacesAndNewlines) })
                     success = true
-                    completionHandler(contents, nil)
+//                    completionHandler(contents, nil)
                     return
                 }
             }) { (response, error) in
@@ -363,7 +363,7 @@ internal extension FTPFileProvider {
                     let code = Int(response.substring(to: spaceIndex).trimmingCharacters(in: .whitespacesAndNewlines)) ?? -1
                     let description = response.substring(from: spaceIndex).trimmingCharacters(in: .whitespacesAndNewlines)
                     let error = FileProviderFTPError(code: code, path: path, errorDescription: description)
-
+                    
                     self.dispatch_queue.async {
                         completionHandler([], error)
                     }
@@ -890,7 +890,7 @@ internal extension FTPFileProvider {
                 
             case "modify":
                 file.modifiedDate = dateFormatter.date(from: attribute)
-            
+                
             case "create":
                 file.creationDate = dateFormatter.date(from: attribute)
                 
@@ -922,3 +922,4 @@ public struct FileProviderFTPError: Error {
     /// Contents returned by server as error description
     public let errorDescription: String?
 }
+
